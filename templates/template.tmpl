@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <title>plexweb</title>
+        <link rel="stylesheet" href="/plex/css/style.css" type="text/css">
+    </head>
+    <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+        <center>
+            <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="backgroundTable">
+                <tr>
+                    <td align="center" valign="center">
+                        <br />
+                        <table border="0" cellpadding="0" cellspacing="0" width="360" id="templateContainer">
+                            <tr>
+                                <td align="center" valign="top">
+                                    <!-- // Begin Template Body \\ -->
+                                    <table border="0" cellpadding="0" cellspacing="0" width="360" id="templateBody">
+                                        <tr>
+                                            <td valign="top" class="bodyContent">
+                                
+                                                <!-- // Begin Module: Standard Content \\ -->
+                                                <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                                                    <tr>
+                                                        <td valign="top">
+                                                            <div mc:edit="std_content00">
+                                                                <div id=controls>
+                                                                    <a href="/plex/playback/stepBack">&lt&lt</a>
+                                                                    <a href="/plex/playback/play">play/pause</a>
+                                                                    <a href="/plex/playback/stop">stop</a>
+                                                                    <a href="/plex/playback/stepForward">&gt&gt</a>
+                                                                </div>
+                                                        
+                                                                <div id=title>
+                                                                    <h1>$info.title</h1>
+                                                                    <h2>$info.subtitle</h2>
+                                                                </div>
+                                                        
+                                                                <div id=items>
+                                                                    <ul>
+                                                                    #for $item in $media
+                                                                        #if $item.kind == "show"
+                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title</a></li>
+                                                                        #elif $item.kind == "season"
+                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title &#8211 $item.numChildren Episodes</a></li>
+                                                                        #elif $item.kind == "movie"
+                                                                        <li><a href="/plex/playMedia?key=$item.key">$item.title ($item.year)</a></li>
+                                                                        #elif $item.kind == "episode"
+                                                                        <li><a href="/plex/playMedia?key=$item.key">Episode $item.number - $item.title</a></li>
+                                                                        #elif $item.kind == "directory"
+                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title</a></li>
+                                                                        #end if
+                                                                    #end for
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <!-- // End Module: Standard Content \\ -->
+                                                
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- // End Template Body \\ -->
+                                </td>
+                            </tr>
+                        </table>
+                        <br />
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </body>
+</html>
