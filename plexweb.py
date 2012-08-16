@@ -19,6 +19,8 @@
     x     - stop
     right - step forward
     left  - step back
+    up    - volume up
+    down  - volume down
 
 """
 

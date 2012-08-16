@@ -45,6 +45,14 @@
                 shortcut.add("h",function() {
                     window.location.href = "$config.webroot/home"
                 });
+                shortcut.add("up",function() {
+                    document.getElementById("volume").value++;
+                    changeVolume(document.getElementById("volume").value)
+                });
+                shortcut.add("down",function() {
+                    document.getElementById("volume").value--;
+                    changeVolume(document.getElementById("volume").value)
+                });
             }
             window.onload=init;
         </script>
@@ -74,7 +82,7 @@
                                                                     <a href="javascript:void(0)" onclick="playback('stop');">stop</a>
                                                                     <a href="javascript:void(0)" onclick="playback('stepForward');">&gt&gt</a>
                                                                     <br />
-                                                                    <input type="range" min="0" max="100" value="100" onchange="changeVolume(this.value)"/>
+                                                                    <input type="range" id="volume" min="0" max="100" value="100" onchange="changeVolume(this.value)"/>
                                                                 </div>
                                                         
                                                                 <div id=title>

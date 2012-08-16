@@ -15,10 +15,12 @@ Tested on Linux and Mac OSX.
 
 ## Hotkeys:
 
-* h     - home
-* l     - library
-* space - play/pause
-* x     - stop
-* right - step forward
-* left  - step back
+* `h`     - home
+* `l`     - library
+* `space` - play/pause
+* `x`     - stop
+* `right` - step forward
+* `left`  - step back
+* `up`    - volume up
+* `down`  - volume down
 
