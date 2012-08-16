@@ -225,7 +225,6 @@ class Directory(object):
 class Media(Directory):
     def __init__(self, tag):
         super(Media, self).__init__(tag)
-        self.key = getAttrib(tag, "key")#.rsplit("/",2).pop(1)
         self.kind = getAttrib(tag, "type")
         self.thumb = getAttrib(tag, "thumb").replace('=','%3D') # default plex image if thumb not found?
     
@@ -244,6 +243,8 @@ class Season(Media):
 class Episode(Media):
     def __init__(self, tag):
         super(Episode, self).__init__(tag)
+        key = self.key
+        self.key = key.split("?",1)[0] # strip any flags (such as "unwatched")
         self.number = getAttrib(tag, "index")
         self.seasonNumber = getAttrib(tag, "parentIndex")
         self.showTitle = getAttrib(tag, "grandparentTitle")
