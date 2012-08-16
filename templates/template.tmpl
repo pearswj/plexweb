@@ -2,6 +2,52 @@
     <head>
         <title>plexweb</title>
         <link rel="stylesheet" href="/plex/css/style.css" type="text/css">
+        <script src="/plex/js/shortcut.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            function callUrl(url)
+            {
+                var xmlHttp = null;
+                xmlHttp = new XMLHttpRequest();
+                xmlHttp.open( "GET", url, false );
+                xmlHttp.send( null );
+            }
+            function changeVolume(vol)
+            {
+                var url = "http://$config.server:$config.port/system/players/$config.player/application/setVolume?level=";
+                callUrl(url.concat(vol));
+            }
+            function playback(command)
+            {
+                var url = "http://$config.server:$config.port/system/players/$config.player/playback/";
+                callUrl(url.concat(command));
+            }
+            function playMedia(key)
+            {
+                var url = "http://$config.server:$config.port/system/players/$config.player/application/playMedia?key=" + key + "&path=http://$config.server:$config.port" + key;
+                callUrl(url);
+            }
+            function init() {
+                shortcut.add("space",function() {
+                    playback('play');
+                });
+                shortcut.add("x",function() {
+                    playback('stop');
+                });
+                shortcut.add("right",function() {
+                    playback('stepForward');
+                });
+                shortcut.add("left",function() {
+                    playback('stepBack');
+                });
+                shortcut.add("l",function() {
+                    window.location.href = "$config.webroot/library"
+                });
+                shortcut.add("h",function() {
+                    window.location.href = "$config.webroot/home"
+                });
+            }
+            window.onload=init;
+        </script>
     </head>
     <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
         <center>
@@ -23,15 +69,21 @@
                                                         <td valign="top">
                                                             <div mc:edit="std_content00">
                                                                 <div id=controls>
-                                                                    <a href="/plex/playback/stepBack">&lt&lt</a>
-                                                                    <a href="/plex/playback/play">play/pause</a>
-                                                                    <a href="/plex/playback/stop">stop</a>
-                                                                    <a href="/plex/playback/stepForward">&gt&gt</a>
+                                                                    <a href="javascript:void(0)" onclick="playback('stepBack'); return">&lt&lt</a>
+                                                                    <a href="javascript:void(0)" onclick="playback('play');">play/pause</a>
+                                                                    <a href="javascript:void(0)" onclick="playback('stop');">stop</a>
+                                                                    <a href="javascript:void(0)" onclick="playback('stepForward');">&gt&gt</a>
+                                                                    <br />
+                                                                    <input type="range" min="0" max="100" value="100" onchange="changeVolume(this.value)"/>
                                                                 </div>
                                                         
                                                                 <div id=title>
+                                                                    #if $info.title:
                                                                     <h1>$info.title</h1>
+                                                                    #end if
+                                                                    #if $info.subtitle:
                                                                     <h2>$info.subtitle</h2>
+                                                                    #end if
                                                                 </div>
                                                         
                                                                 <div id=items>
@@ -40,11 +92,19 @@
                                                                         #if $item.kind == "show"
                                                                         <li><a href="/plex/library/displayMedia?key=$item.key">$item.title</a></li>
                                                                         #elif $item.kind == "season"
-                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title &#8211 $item.numChildren Episodes</a></li>
+                                                                            #if $info.mixedParents:
+                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.showTitle S$item.number &#8211 $item.numEpisodes Episodes</a></li>
+                                                                            #else
+                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title &ndash; $item.numEpisodes Episodes</a></li>
+                                                                            #end if
                                                                         #elif $item.kind == "movie"
-                                                                        <li><a href="/plex/playMedia?key=$item.key">$item.title ($item.year)</a></li>
+                                                                        <li><a href="javascript:void(0)" onclick="playMedia('$item.key')">$item.title ($item.year)</a></li>
                                                                         #elif $item.kind == "episode"
-                                                                        <li><a href="/plex/playMedia?key=$item.key">Episode $item.number - $item.title</a></li>
+                                                                            #if $info.mixedParents:
+                                                                        <li><a href="javascript:void(0)" onclick="playMedia('$item.key')">$item.showTitle S$item.seasonNumber&sdot;E$item.number</a></li>
+                                                                            #else
+                                                                        <li><a href="javascript:void(0)" onclick="playMedia('$item.key')">Episode $item.number &ndash; $item.title</a></li>
+                                                                            #end if
                                                                         #elif $item.kind == "directory"
                                                                         <li><a href="/plex/library/displayMedia?key=$item.key">$item.title</a></li>
                                                                         #end if
