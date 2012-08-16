@@ -65,11 +65,6 @@ def main():
                 'tools.encode.on': True,
                 'tools.encode.encoding': 'utf-8',
         },
-        '/images':
-        {
-                'tools.staticdir.on':  True,
-                'tools.staticdir.dir': 'images'
-        },
         '/js':
         {
                 'tools.staticdir.on':  True,
