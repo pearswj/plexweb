@@ -141,7 +141,6 @@ class Library:
     def parseMedia(self, key):
         # open library url
         library = "http://" + config.server + ":32400" + key
-        print library
         xml = urllib2.urlopen("http://" + config.server + ":32400" + key)
         
         # parse xml
