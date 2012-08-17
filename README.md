@@ -23,4 +23,5 @@ Tested on Linux and Mac OSX.
 * `left`  - step back
 * `up`    - volume up
 * `down`  - volume down
+* `u`     - toggle between 'all' and 'unwatched' views
 

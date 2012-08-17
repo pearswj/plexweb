@@ -27,6 +27,13 @@
                 callUrl(url);
             }
             function init() {
+                String.prototype.endswith = function(suffix) {
+                    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+                };
+                String.prototype.rsplit = function(sep, maxsplit) {
+                    var split = this.split(sep);
+                    return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
+                }
                 shortcut.add("space",function() {
                     playback('play');
                 });
@@ -40,18 +47,29 @@
                     playback('stepBack');
                 });
                 shortcut.add("l",function() {
-                    window.location.href = "$config.webroot/library"
+                    window.location.href = "$config.webroot/library";
                 });
                 shortcut.add("h",function() {
-                    window.location.href = "$config.webroot/home"
+                    window.location.href = "$config.webroot/home";
                 });
                 shortcut.add("up",function() {
                     document.getElementById("volume").value++;
-                    changeVolume(document.getElementById("volume").value)
+                    changeVolume(document.getElementById("volume").value);
                 });
                 shortcut.add("down",function() {
                     document.getElementById("volume").value--;
-                    changeVolume(document.getElementById("volume").value)
+                    changeVolume(document.getElementById("volume").value);
+                });
+                shortcut.add("u",function() {
+                    if (window.location.href.endswith("?unwatched=1"))
+                    {
+                        var unwatched = window.location.href.rsplit("?",1)[0];
+                    }
+                    else
+                    {
+                        var unwatched = window.location.href + "?unwatched=1";
+                    }
+                    window.location.href = unwatched;
                 });
             }
             window.onload=init;
@@ -82,7 +100,7 @@
                                                                     <a href="javascript:void(0)" onclick="playback('stop');">stop</a>
                                                                     <a href="javascript:void(0)" onclick="playback('stepForward');">&gt&gt</a>
                                                                     <br />
-                                                                    <input type="range" id="volume" min="0" max="100" value="100" onchange="changeVolume(this.value)"/>
+                                                                    <input type="range" id="volume" min="0" max="100" value="80" onchange="changeVolume(this.value)"/>
                                                                 </div>
                                                         
                                                                 <div id=title>
@@ -118,6 +136,9 @@
                                                                         #end if
                                                                     #end for
                                                                     </ul>
+                                                                    #if not $media:
+                                                                    Nothing to see here...
+                                                                    #end if
                                                                 </div>
                                                             </div>
                                                         </td>

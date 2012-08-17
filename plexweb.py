@@ -219,7 +219,7 @@ class Directory(object):
         self.title = getAttrib(tag, "title").encode('ascii', 'xmlcharrefreplace')
         key = getAttrib(tag, "key")
         if not key.startswith("/") and kwargs.get('key') != None:
-            self.key = kwargs.get('key') + "/" + key
+            self.key = kwargs.get('key').split("?",1)[0] + "/" + key
         else:
             self.key = key
         self.kind = "directory"
@@ -270,7 +270,8 @@ class Plexweb(object):
     @cherrypy.expose
     def home(self):
         info, items = Library().getRecentlyAdded()
-        info.title = "Recently Added"
+        info.title = "Home"
+        info.subtitle = "Recently Added"
         t = tmplt(info, items)
         return str(t)
 
