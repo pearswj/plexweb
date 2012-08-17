@@ -1,7 +1,7 @@
 
 # Plexweb
 
-A *simple* webapp to control Plex Media Center using Cherrpy, Cheetah and Javascript to interface with the Plex HTTP API.
+A *simple* python webapp to control Plex Media Center via the HTTP API using Cherrpy, Cheetah and Javascript.
 
 Only handles TV Shows and Movies -- feel free to expand it!
 

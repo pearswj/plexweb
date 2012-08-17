@@ -4,23 +4,9 @@
     Author: Will Pearson
     Github: pearswj
 
-    A *simple* webinterface to control Plex Media Center using Cherrpy, Cheetah and Javascript
-    Only handles TV Shows and Movies -- feel free to expand it!
-    Tested on Linux and Mac OSX
+    A *simple* python webapp to control Plex Media Center via the HTTP API using Cherrpy, Cheetah and Javascript.
     
-    Usage:
-    $ python2 /path/to/plexweb.py
-    (And open 'http://[hostname/IP]:8082[webroot]' in your browser)
-
-    Hotkeys:
-    h     - home
-    l     - library
-    space - play/pause
-    x     - stop
-    right - step forward
-    left  - step back
-    up    - volume up
-    down  - volume down
+    See README.md for more info...
 
 """
 
@@ -35,6 +21,7 @@ import os.path
 #                 Config & Start Cherrpy               #
 # ---------------------------------------------------- #
 
+# main function: configure and start cherrypy
 def main():
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -88,6 +75,7 @@ def main():
     cherrypy.quickstart(Plexweb(), config.webroot, conf) 
 
 
+# Config class: hold config for use in templates
 class Config(object):
     def __init__(self, server, port, player, webroot):
         self.server = server
@@ -117,7 +105,7 @@ else:
 
     '''%(os.path.join(current_dir, 'templates/'))
 
-# Populate and return template
+# tmplt function: Populate and return template
 def tmplt(info, media):
     if cheetahCompiled:
         t = template()
@@ -133,6 +121,7 @@ def tmplt(info, media):
 #                       Library                        #
 # ---------------------------------------------------- #
 
+# Library class: handles parsing of metadata for template
 class Library:
     @cherrypy.expose
     def index(self):
@@ -186,7 +175,7 @@ class Library:
         
         return info, items
 
-    def getRecentlyAdded(self):
+    def getRecentlyAdded(self): # quick call to recentlyAdded
         info, items = self.parseMedia("/library/recentlyAdded?query=c&X-Plex-Container-Start=0&X-Plex-Container-Size=20")
         return info, items
 
@@ -199,7 +188,7 @@ class Library:
         return str(t)
 
         
-# function to get attribute "key" from item "tag"
+# getAttrib function: get attribute "key" from item "tag" (and not break if the key doesn't exist)
 def getAttrib(tag, key, false=""):
     try:
         attrib = tag.attrib[key]
@@ -207,13 +196,15 @@ def getAttrib(tag, key, false=""):
         attrib = false
     return attrib
 
+# Info class: contains select keys from MediaContainer tag
 class Info(object):
     def __init__(self, tag):
         self.title = getAttrib(tag, "title1", false=False)
         self.subtitle = getAttrib(tag, "title2", false=False)
-        #self.thumb = getAttrib(tag, "thumb").replace('=','%3D') # default plex image if thumb not found?
+        #self.thumb = getAttrib(tag, "thumb").replace('=','%3D') # TODO: default plex image if thumb not found?
         self.mixedParents = getAttrib(tag, "mixedParents", false=False)
 
+# Directory class (and subclasses): contains select keys from various Directory and Video tags
 class Directory(object):
     def __init__(self, tag, **kwargs):
         self.title = getAttrib(tag, "title").encode('ascii', 'xmlcharrefreplace')
@@ -228,7 +219,7 @@ class Media(Directory):
     def __init__(self, tag):
         super(Media, self).__init__(tag)
         self.kind = getAttrib(tag, "type")
-        self.thumb = getAttrib(tag, "thumb").replace('=','%3D') # default plex image if thumb not found?
+        #self.thumb = getAttrib(tag, "thumb").replace('=','%3D') # TODO: default plex image if thumb not found?
     
 class Show(Media):
     def __init__(self, tag):
@@ -261,6 +252,7 @@ class Movie(Media):
 #                       Plexweb                        #
 # ---------------------------------------------------- #
 
+# Plexweb class: the root class called when initialising cherrypy
 class Plexweb(object):
 
     @cherrypy.expose
