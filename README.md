@@ -21,6 +21,8 @@ Tested on Linux and Mac OSX.
 * `x`     - stop
 * `right` - step forward
 * `left`  - step back
+* `Alt + right` - big step forward
+* `Alt + left`  - big step back
 * `up`    - volume up
 * `down`  - volume down
 * `u`     - toggle between 'all' and 'unwatched' views

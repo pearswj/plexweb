@@ -146,7 +146,7 @@ class Library:
         xmlItems = list(tree.iter())
         items = []
         for i in xmlItems:
-            kind = getAttrib(i, "type")
+            kind = i.get("type")
             
             if i.tag == "Directory":
                 if key[:17] == "/library/sections":
@@ -187,28 +187,20 @@ class Library:
         t = tmplt(info, items)
         return str(t)
 
-        
-# getAttrib function: get attribute "key" from item "tag" (and not break if the key doesn't exist)
-def getAttrib(tag, key, false=""):
-    try:
-        attrib = tag.attrib[key]
-    except:
-        attrib = false
-    return attrib
 
 # Info class: contains select keys from MediaContainer tag
 class Info(object):
     def __init__(self, tag):
-        self.title = getAttrib(tag, "title1", false=False)
-        self.subtitle = getAttrib(tag, "title2", false=False)
-        #self.thumb = getAttrib(tag, "thumb").replace('=','%3D') # TODO: default plex image if thumb not found?
-        self.mixedParents = getAttrib(tag, "mixedParents", false=False)
+        self.title = tag.get("title1", default=False)
+        self.subtitle = tag.get("title2", default=False)
+        #self.thumb = tag.get("thumb").replace('=','%3D') # TODO: default plex image if thumb not found?
+        self.mixedParents = tag.get("mixedParents", default=False)
 
 # Directory class (and subclasses): contains select keys from various Directory and Video tags
 class Directory(object):
     def __init__(self, tag, **kwargs):
-        self.title = getAttrib(tag, "title").encode('ascii', 'xmlcharrefreplace')
-        key = getAttrib(tag, "key")
+        self.title = tag.get("title").encode('ascii', 'xmlcharrefreplace')
+        key = tag.get("key")
         if not key.startswith("/") and kwargs.get('key') != None:
             self.key = kwargs.get('key').split("?",1)[0] + "/" + key
         else:
@@ -218,34 +210,34 @@ class Directory(object):
 class Media(Directory):
     def __init__(self, tag):
         super(Media, self).__init__(tag)
-        self.kind = getAttrib(tag, "type")
-        #self.thumb = getAttrib(tag, "thumb").replace('=','%3D') # TODO: default plex image if thumb not found?
+        self.kind = tag.get("type")
+        #self.thumb = tag.get("thumb").replace('=','%3D') # TODO: default plex image if thumb not found?
     
 class Show(Media):
     def __init__(self, tag):
         super(Show, self).__init__(tag)
-        self.year = getAttrib(tag, "year")
+        self.year = tag.get("year")
 
 class Season(Media):
     def __init__(self, tag):
         super(Season, self).__init__(tag)
-        self.number = getAttrib(tag, "index")
-        self.numEpisodes = getAttrib(tag, "leafCount")
-        self.showTitle = getAttrib(tag, "parentTitle")
+        self.number = tag.get("index")
+        self.numEpisodes = tag.get("leafCount")
+        self.showTitle = tag.get("parentTitle")
 
 class Episode(Media):
     def __init__(self, tag):
         super(Episode, self).__init__(tag)
         key = self.key
         self.key = key.split("?",1)[0] # strip any flags (such as "unwatched")
-        self.number = getAttrib(tag, "index")
-        self.seasonNumber = getAttrib(tag, "parentIndex")
-        self.showTitle = getAttrib(tag, "grandparentTitle")
+        self.number = tag.get("index")
+        self.seasonNumber = tag.get("parentIndex")
+        self.showTitle = tag.get("grandparentTitle")
     
 class Movie(Media):
     def __init__(self, tag):
         super(Movie, self).__init__(tag)
-        self.year = getAttrib(tag, "year")
+        self.year = tag.get("year")
 
 
 # ---------------------------------------------------- #

@@ -46,6 +46,12 @@
                 shortcut.add("left",function() {
                     playback('stepBack');
                 });
+                shortcut.add("Alt+right",function() {
+                    playback('bigStepForward');
+                });
+                shortcut.add("Alt+left",function() {
+                    playback('bigStepBack');
+                });
                 shortcut.add("l",function() {
                     window.location.href = "$config.webroot/library";
                 });
@@ -61,15 +67,18 @@
                     changeVolume(document.getElementById("volume").value);
                 });
                 shortcut.add("u",function() {
-                    if (window.location.href.endswith("?unwatched=1"))
+                    if (window.location.search.substring(0, 13) === "?key=/library")
                     {
-                        var unwatched = window.location.href.rsplit("?",1)[0];
+                        if (window.location.href.endswith("?unwatched=1"))
+                        {
+                            var unwatched = window.location.href.rsplit("?",1)[0];
+                        }
+                        else
+                        {
+                            var unwatched = window.location.href + "?unwatched=1";
+                        }
+                        window.location.href = unwatched;
                     }
-                    else
-                    {
-                        var unwatched = window.location.href + "?unwatched=1";
-                    }
-                    window.location.href = unwatched;
                 });
             }
             window.onload=init;
