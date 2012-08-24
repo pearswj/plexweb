@@ -125,12 +125,12 @@
                                                                     <ul>
                                                                     #for $item in $media
                                                                         #if $item.kind == "show"
-                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title</a></li>
+                                                                        <li><a href="/plex/library?key=$item.key">$item.title</a></li>
                                                                         #elif $item.kind == "season"
                                                                             #if $info.mixedParents:
-                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.showTitle S$item.number &#8211 $item.numEpisodes Episodes</a></li>
+                                                                        <li><a href="/plex/library?key=$item.key">$item.showTitle S$item.number &#8211 $item.numEpisodes Episodes</a></li>
                                                                             #else
-                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title &ndash; $item.numEpisodes Episodes</a></li>
+                                                                        <li><a href="/plex/library?key=$item.key">$item.title &ndash; $item.numEpisodes Episodes</a></li>
                                                                             #end if
                                                                         #elif $item.kind == "movie"
                                                                         <li><a href="javascript:void(0)" onclick="playMedia('$item.key')">$item.title ($item.year)</a></li>
@@ -141,7 +141,7 @@
                                                                         <li><a href="javascript:void(0)" onclick="playMedia('$item.key')">Episode $item.number &ndash; $item.title</a></li>
                                                                             #end if
                                                                         #elif $item.kind == "directory"
-                                                                        <li><a href="/plex/library/displayMedia?key=$item.key">$item.title</a></li>
+                                                                        <li><a href="/plex/library?key=$item.key">$item.title</a></li>
                                                                         #end if
                                                                     #end for
                                                                     </ul>

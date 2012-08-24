@@ -118,17 +118,38 @@ def tmplt(info, media):
 
 
 # ---------------------------------------------------- #
-#                       Library                        #
+#                       Plexweb                        #
 # ---------------------------------------------------- #
 
-# Library class: handles parsing of metadata for template
-class Library:
+# Plexweb class: the root class called when initialising cherrypy
+class Plexweb(object):
+
+    favicon_ico = None
+
+    # Redirect "/" to "/home"
     @cherrypy.expose
     def index(self):
-        info, items = self.parseMedia("/library")
+        raise cherrypy.HTTPRedirect(config.webroot + "/home")
+
+    # Home: Display recently added media
+    @cherrypy.expose
+    def home(self):
+        info, items = self.parseMedia("/library/recentlyAdded?query=c&X-Plex-Container-Start=0&X-Plex-Container-Size=20")
+        info.title = "Home"
+        info.subtitle = "Recently Added"
+        t = tmplt(info, items)
+        return str(t)
+
+    # Library: display media from library (specified by "key")
+    @cherrypy.expose
+    def library(self, key="/library"):
+        if key.endswith('/'):
+            raise cherrypy.HTTPRedirect(config.webroot + cherrypy.request.path_info + "?key=" + key[:-1])
+        info, items = self.parseMedia(key)
         t = tmplt(info, items)
         return str(t)
     
+    # Parse plex xml into container classes to be passed to Cheetah template
     def parseMedia(self, key):
         # open library url
         library = "http://" + config.server + ":32400" + key
@@ -149,8 +170,8 @@ class Library:
             kind = i.get("type")
             
             if i.tag == "Directory":
-                if key[:17] == "/library/sections":
-                    item = Directory(i, key=key)
+                if key[:17] == "/library/sections": # Don't interpret sections as media items
+                    item = Directory(i, prefix=key)
                     items.append(item)
                 else:
                     if kind == "season":
@@ -159,8 +180,8 @@ class Library:
                     elif kind == "show":
                         item = Show(i)
                         items.append(item)
-                    elif kind == "":
-                        item = Directory(i, key=key)
+                    elif kind == None:
+                        item = Directory(i, prefix=key)
                         items.append(item)
             if i.tag == "Video":
                 if kind == "episode":
@@ -175,18 +196,10 @@ class Library:
         
         return info, items
 
-    def getRecentlyAdded(self): # quick call to recentlyAdded
-        info, items = self.parseMedia("/library/recentlyAdded?query=c&X-Plex-Container-Start=0&X-Plex-Container-Size=20")
-        return info, items
 
-    @cherrypy.expose
-    def displayMedia(self, key=None):
-        if key.endswith('/'):
-            raise cherrypy.HTTPRedirect(config.webroot + cherrypy.request.path_info + "?key=" + key[:-1])
-        info, items = self.parseMedia(key)
-        t = tmplt(info, items)
-        return str(t)
-
+# ---------------------------------------------------- #
+#              Library Container Classes               #
+# ---------------------------------------------------- #
 
 # Info class: contains select keys from MediaContainer tag
 class Info(object):
@@ -201,8 +214,8 @@ class Directory(object):
     def __init__(self, tag, **kwargs):
         self.title = tag.get("title").encode('ascii', 'xmlcharrefreplace')
         key = tag.get("key")
-        if not key.startswith("/") and kwargs.get('key') != None:
-            self.key = kwargs.get('key').split("?",1)[0] + "/" + key
+        if not key.startswith("/") and kwargs.get('prefix') != None:
+            self.key = kwargs.get('prefix').split("?",1)[0] + "/" + key
         else:
             self.key = key
         self.kind = "directory"
@@ -239,28 +252,6 @@ class Movie(Media):
         super(Movie, self).__init__(tag)
         self.year = tag.get("year")
 
-
-# ---------------------------------------------------- #
-#                       Plexweb                        #
-# ---------------------------------------------------- #
-
-# Plexweb class: the root class called when initialising cherrypy
-class Plexweb(object):
-
-    @cherrypy.expose
-    def index(self):
-        raise cherrypy.HTTPRedirect(config.webroot + "/home")
-
-    @cherrypy.expose
-    def home(self):
-        info, items = Library().getRecentlyAdded()
-        info.title = "Home"
-        info.subtitle = "Recently Added"
-        t = tmplt(info, items)
-        return str(t)
-
-    library = Library()
-    favicon_ico = None
 
 
 if __name__ == '__main__':
